@@ -1,5 +1,6 @@
 #' extract TimeSpatData (Spat-Dimension)
 #' @description Extract `TimeSpatData` to `TimeVectData`.
+#' # `extract_tsd`
 #' The theory is same as [terra::extract], `TimeVectData` or `TimeRastData` will be extracted using a weighted average in the given polygons (`mask_area`).
 #' The weight will be calculated based on the area of the polygons or raster cells within the `mask_area`.
 #' **NOTE**: this function can only be used for **values that make sense in weighted average**.
@@ -12,16 +13,27 @@
 #' Where \mjseqn{\vec{\Omega}_{[time,region]}} is the area mean of each EZG (`mat_value_region`),
 #' \mjseqn{\vec{A}_{[time,grid]}} are the Grid values for each time step (`mat_value`)
 #' and \mjseqn{\vec{W}_{[grid,region]}} is the area fraction between each cell in the RU (`mat_weight`).
+#' # `extract_tsd2`
+#' `extract_tsd2` is a variation specifically designed for efficiently extracting large datasets,
+#' without considering the ratio of raster points falling within a polygon.
+#' Its functionality relies solely on the location of the **center point**.
+#' When the center point falls within the polygon,
+#' the entire raster point is counted towards the designated polygon.
 #' @name extract_tsd
 #' @param tsd_Data `TimeSpatData` data
 #' - `TimeVectVariable`
 #' - `TimeVectArray`
 #' - `TimeRastVariable`
 #' - `TimeRastArray`
+#'
 #' @param mask_area (SpatVector) Polygons, from [terra::vect()]
 #' @importFrom terra intersect rast crop res mask expanse size as.polygons values
 #' @export
 extract_tsd <- function(tsd_Data, mask_area) UseMethod("extract_tsd", tsd_Data)
+
+#' @rdname extract_tsd
+#' @export
+extract_tsd2 <- function(tsd_Data, mask_area) UseMethod("extract_tsd2", tsd_Data)
 
 #' @rdname extract_tsd
 #' @export
@@ -99,6 +111,9 @@ extract_tsd.TimeVectArray <- function(tsd_Data, mask_area) {
                        Spat_ID,
                        mask_area)
 }
+
+
+
 
 #' @rdname extract_tsd
 #' @export
@@ -211,6 +226,73 @@ extract_tsd.TimeRastVariable <- function(tsd_Data, mask_area) {
                        Spat_ID,
                        mask_area)
 }
+
+
+#' @rdname extract_tsd
+#' @export
+extract_tsd2.TimeRastVariable <- function(tsd_Data, mask_area, touches = TRUE) {
+  check_epsg(tsd_Data, mask_area)
+  dim_n <- dim(tsd_Data)
+  n_region <- length(mask_area)
+
+  extent_ori <- attr(tsd_Data, "Spat_extent")
+  crs_ori <- attr(tsd_Data, "Spat_crs")
+  rast_trd <- rast(nrows = dim(tsd_Data)[3], ncols = dim(tsd_Data)[2], crs = paste0("EPSG:", crs_ori), extent = extent_ori)
+  Spat_ID <- mask_area$Spat_ID
+
+  ## matrix of weight
+  mat_weight <- weight2.mat(rast_trd, mask_area, touches)
+  ## fix the NA cell
+  mat_value_1 <- tsd_Data[1,,]
+  idx_value <- which(!is.na(mat_value_1))
+  mat_weight <- mat_weight[idx_value,]
+
+  mat_value <- tsd_Data |> array(c(dim_n[1], dim_n[2] * dim_n[3]))
+
+  extract_data <- mat_value %*% mat_weight
+  new_TimeVectVariable(extract_data,
+                       attr(tsd_Data, "Name"),
+                       attr(tsd_Data, "Unit"),
+                       attr(tsd_Data, "Time"),
+                       Spat_ID,
+                       mask_area)
+}
+
+#' @rdname extract_tsd
+#' @export
+extract_tsd.TimeRastVariable <- function(tsd_Data, mask_area) {
+  check_epsg(tsd_Data, mask_area)
+  dim_n <- dim(tsd_Data)
+  n_region <- length(mask_area)
+
+  extent_ori <- attr(tsd_Data, "Spat_extent")
+  crs_ori <- attr(tsd_Data, "Spat_crs")
+  rast_trd <- rast(nrows = dim(tsd_Data)[3], ncols = dim(tsd_Data)[2], crs = paste0("EPSG:", crs_ori), extent = extent_ori)
+  Spat_ID <- mask_area$Spat_ID
+
+  ## matrix of weight
+  mat_weight <- weight.mat(rast_trd, mask_area)
+  ## fix the NA cell
+  mat_value_1 <- tsd_Data[1,,]
+  idx_value <- which(!is.na(mat_value_1))
+  mat_weight <- mat_weight[idx_value,]
+  if(length(mask_area) == 1) {
+    mat_weight <- mat_weight / sum((mat_weight))
+  } else {
+    mat_weight <- mat_weight / rep(colSums(mat_weight), each = nrow(mat_weight))
+  }
+
+  mat_value <- tsd_Data |> array(c(dim_n[1], dim_n[2] * dim_n[3]))
+
+  extract_data <- mat_value %*% mat_weight
+  new_TimeVectVariable(extract_data,
+                       attr(tsd_Data, "Name"),
+                       attr(tsd_Data, "Unit"),
+                       attr(tsd_Data, "Time"),
+                       Spat_ID,
+                       mask_area)
+}
+
 
 #' @rdname extract_tsd
 #' @export

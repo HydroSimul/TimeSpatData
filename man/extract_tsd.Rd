@@ -2,17 +2,21 @@
 % Please edit documentation in R/extract.R
 \name{extract_tsd}
 \alias{extract_tsd}
+\alias{extract_tsd2}
 \alias{extract_tsd.TimeVectVariable}
 \alias{extract_tsd.TimeVectArray}
 \alias{extract_tsd.TimeVectLayerVariable}
 \alias{extract_tsd.TimeVectLayerArray}
 \alias{extract_tsd.TimeRastVariable}
+\alias{extract_tsd2.TimeRastVariable}
 \alias{extract_tsd.TimeRastArray}
 \alias{extract_tsd.TimeRastLayerVariable}
 \alias{extract_tsd.TimeRastLayerArray}
 \title{extract TimeSpatData (Spat-Dimension)}
 \usage{
 extract_tsd(tsd_Data, mask_area)
+
+extract_tsd2(tsd_Data, mask_area)
 
 \method{extract_tsd}{TimeVectVariable}(tsd_Data, mask_area)
 
@@ -21,6 +25,10 @@ extract_tsd(tsd_Data, mask_area)
 \method{extract_tsd}{TimeVectLayerVariable}(tsd_Data, mask_area)
 
 \method{extract_tsd}{TimeVectLayerArray}(tsd_Data, mask_area)
+
+\method{extract_tsd}{TimeRastVariable}(tsd_Data, mask_area)
+
+\method{extract_tsd2}{TimeRastVariable}(tsd_Data, mask_area, touches = TRUE)
 
 \method{extract_tsd}{TimeRastVariable}(tsd_Data, mask_area)
 
@@ -43,6 +51,8 @@ extract_tsd(tsd_Data, mask_area)
 }
 \description{
 Extract \code{TimeSpatData} to \code{TimeVectData}.
+}
+\section{\code{extract_tsd}}{
 The theory is same as \link[terra:extract]{terra::extract}, \code{TimeVectData} or \code{TimeRastData} will be extracted using a weighted average in the given polygons (\code{mask_area}).
 The weight will be calculated based on the area of the polygons or raster cells within the \code{mask_area}.
 \strong{NOTE}: this function can only be used for \strong{values that make sense in weighted average}.
@@ -56,3 +66,12 @@ Where \mjseqn{\vec{\Omega}_{[time,region]}} is the area mean of each EZG (\code{
 \mjseqn{\vec{A}_{[time,grid]}} are the Grid values for each time step (\code{mat_value})
 and \mjseqn{\vec{W}_{[grid,region]}} is the area fraction between each cell in the RU (\code{mat_weight}).
 }
+
+\section{\code{extract_tsd2}}{
+\code{extract_tsd2} is a variation specifically designed for efficiently extracting large datasets,
+without considering the ratio of raster points falling within a polygon.
+Its functionality relies solely on the location of the \strong{center point}.
+When the center point falls within the polygon,
+the entire raster point is counted towards the designated polygon.
+}
+

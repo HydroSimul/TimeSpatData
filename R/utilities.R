@@ -65,3 +65,27 @@ weight.mat <- function(rast_, polygon_region) {
 
   mat_weight
 }
+
+weight2.mat <- function(rast_, polygon_region, touches) {
+  rast_ <- rast_[[1]]
+  n_grid <- size(rast_)
+  n_x <- ncol(rast_)
+  n_y <- nrow(rast_)
+  id_grid <- matrix(1:n_grid, n_x, n_y)
+  id_grid <- id_grid[,n_y:1] |> as.numeric()
+  values(rast_) <- id_grid
+
+
+
+  n_region <- nrow(polygon_region)
+  polygon_region$region_area <- expanse(polygon_region)
+  polygon_region$ID_region <- 1:n_region
+
+  mat_weight <- matrix(0, n_grid, n_region)
+  for (i in 1:n_region) {
+    idx_Grid <- terra::mask(rast_, polygon_region[i,]) |> terra::values()
+    mat_weight[idx_Grid, i] <- 1
+  }
+
+  mat_weight
+}

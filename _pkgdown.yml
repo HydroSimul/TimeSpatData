@@ -11,7 +11,7 @@ template:
 
 reference:
 - title: Overview of TSD
-  desc: Create the raster-based TSD-Data from array or SpatRaster.
+  desc: The basical description of TSD.
 - contents:
   - TimeSpatData-package
 - title: Create (new) TSD-Data
