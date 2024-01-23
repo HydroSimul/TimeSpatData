@@ -1,0 +1,179 @@
+# Herunterladen ---------------
+## KlimRefDS_Rasterdaten ---------------
+path_Meteo <- file.path("Y:\\Datengrundlagen\\Meteo_Daten", "ReKIS_1000m_Tag_GK4") # "Y:\\Datengrundlagen\\Meteo_Daten"
+path_Out <- "E:/Kan_Lei/CAMELS-SAX/CAMELS-SAX/Berechnung/Met_Indikator"
+name_Varialbe <- c("ET", "GR", "RK", "TM")
+n_Variable <- length(name_Varialbe)
+link_RefDS <- paste0("https://rekisviewer.hydro.tu-dresden.de/viewer/rekis_domain/KlimRefDS_Rasterdaten/1000m/Tag/GK4/", 
+                     rep(name_Varialbe, each = 60), "/", rep(1961:2020, 4), ".zip")
+fn_RefDS <- link_RefDS |> str_replace("https://rekisviewer.hydro.tu-dresden.de/viewer/rekis_domain", "Rekis") |> str_replace_all("/", "_")
+path_data <- "E:\\Kan_Lei\\CAMELS-SAX\\R_CAMELS_SAX\\data"
+fn_EZG_all <- file.path(path_data, "EZG_all")
+
+## download ---------------
+# map2(link_RefDS, file.path(path_Meteo, fn_RefDS), download.file)
+
+## uzip ---------------
+fn_zip <- list.files(path_Meteo, ".zip$")
+setwd(path_Meteo)
+for (i in 1:length(name_Varialbe)) {
+  fn_zip_1 <- fn_zip |> str_subset(paste0("_", name_Varialbe[i], "_"))
+  map(fn_zip_1, unzip, exdir = paste0(name_Varialbe[i], "_RDS_1000m_Tag_GK4"))
+}
+
+
+
+
+
+
+# Umformieren --------
+ymd_61_20 <- as_date(as_date("1961-1-1") : as_date("2020-12-31"))
+n_Time <- length(ymd_61_20)
+path_Raklida <- file.path(path_Meteo, paste0(name_Varialbe, "_RDS_1000m_Tag_GK4"))
+names_Raklida <- c("PET", "GrassRET", "Niederschlag", "Temperatur")
+units_Raklida <- c("mm/d", "mm/d",            "mm/d",   "°C")
+
+
+rast_Template_Raklida <- rast(file.path(path_Raklida[1], paste0(ymd_61_20[1], ".asc")))
+
+
+n_1000 <- n_Time %/% 1000
+start_1000 <- (0:n_1000) * 1000 + 1
+end_1000 <- c(1:n_1000 * 1000, n_Time)
+
+### ET ------
+setwd(path_Raklida[1])
+ary_Raklida_ET <- array(NA,c(n_Time, 240, 190))
+cluster <- makeCluster(60) 
+registerDoParallel(cluster)
+tic()
+
+  for (k in 1:(n_1000 + 1)) {
+    
+    ary_Temp <- foreach (j = start_1000[k]:end_1000[k], .combine = 'c') %dopar% {
+      data.table::fread(paste0(ymd_61_20[j], ".asc"), skip = 6, data.table = F) |> as.matrix()
+    }
+    ary_Temp <- array(ary_Temp, dim = c(190,240,end_1000[k] - start_1000[k] + 1))
+    ary_Raklida_ET[start_1000[k]:end_1000[k],,] <- aperm(ary_Temp, c(3,2,1))
+    print(range(ary_Temp))
+  }
+  
+toc()
+stopCluster(cluster)
+
+### GR ------
+setwd(path_Raklida[2])
+ary_Raklida_GR <- array(NA,c(n_Time, 240, 190))
+cluster <- makeCluster(60) 
+registerDoParallel(cluster)
+tic()
+
+for (k in 1:(n_1000 + 1)) {
+  
+  ary_Temp <- foreach (j = start_1000[k]:end_1000[k], .combine = 'c') %dopar% {
+    data.table::fread(paste0(ymd_61_20[j], ".asc"), skip = 6, data.table = F) |> as.matrix()
+  }
+  ary_Temp <- array(ary_Temp, dim = c(190,240,end_1000[k] - start_1000[k] + 1))
+  ary_Raklida_GR[start_1000[k]:end_1000[k],,] <- aperm(ary_Temp, c(3,2,1))
+  print(range(ary_Temp))
+}
+
+toc()
+stopCluster(cluster)
+
+### RK ------
+setwd(path_Raklida[3])
+ary_Raklida_RK <- array(NA,c(n_Time, 240, 190))
+cluster <- makeCluster(60) 
+registerDoParallel(cluster)
+tic()
+
+for (k in 1:(n_1000 + 1)) {
+  
+  ary_Temp <- foreach (j = start_1000[k]:end_1000[k], .combine = 'c') %dopar% {
+    data.table::fread(paste0(ymd_61_20[j], ".asc"), skip = 6, data.table = F) |> as.matrix()
+  }
+  ary_Temp <- array(ary_Temp, dim = c(190,240,end_1000[k] - start_1000[k] + 1))
+  ary_Raklida_RK[start_1000[k]:end_1000[k],,] <- aperm(ary_Temp, c(3,2,1))
+  print(range(ary_Temp))
+}
+
+toc()
+stopCluster(cluster)
+
+
+### TM ------
+setwd(path_Raklida[4])
+ary_Raklida_TM <- array(NA,c(n_Time, 240, 190))
+cluster <- makeCluster(60) 
+registerDoParallel(cluster)
+tic()
+
+for (k in 1:(n_1000 + 1)) {
+  
+  ary_Temp <- foreach (j = start_1000[k]:end_1000[k], .combine = 'c') %dopar% {
+    data.table::fread(paste0(ymd_61_20[j], ".asc"), skip = 6, data.table = F) |> as.matrix()
+  }
+  ary_Temp <- array(ary_Temp, dim = c(190,240,end_1000[k] - start_1000[k] + 1))
+  ary_Raklida_TM[start_1000[k]:end_1000[k],,] <- aperm(ary_Temp, c(3,2,1))
+  print(range(ary_Temp))
+}
+
+toc()
+stopCluster(cluster)
+
+
+ary_Raklida <- abind::abind(ary_Raklida_ET, ary_Raklida_GR, ary_Raklida_RK, ary_Raklida_TM, along = 4)
+
+tsd_Rekis_GK4 <- new_TimeRastArray(ary_Raklida[,,190:1,], names_Raklida, units_Raklida, ymd_61_20, 31468, ext(rast_Template_Raklida))
+write_tsd(tsd_Rekis_GK4, file.path(path_Meteo, "tsd_RekisGK4_61_20_ETGRRKTM.nc"))
+
+rm(ary_Raklida)
+
+
+
+# Extract -----------
+### Polygon 
+polygon_EZG_all <- vect(fn_EZG_all)
+polygon_EZG_all$Spat_ID <- paste0("PID", polygon_EZG_all$MSTNR)
+tic()
+tva_Meteo_CAMELSSAX <- extract_tsd(tsd_Rekis_GK4, project(polygon_EZG_all, "EPSG:31468"))
+toc()
+write_tsd(tva_Meteo_CAMELSSAX, file.path(path_Meteo, "tsd_tva_Meteo_CAMELSSAX_61_20.nc"))
+
+
+
+# Indikatoren ---------
+num_Mean_4 <- apply(tva_Meteo_CAMELSSAX, c(2,3), mean)
+num_Tk0 <- colSums(tva_Meteo_CAMELSSAX[,,4] < 0) / n_Time
+num_MeteoIndikator <- cbind(num_Mean_4, num_Tk0)
+num_MeteoIndikator[,1:3] <- num_MeteoIndikator[,1:3] * 365.25
+colnames(num_MeteoIndikator) <- c("PET_mm_a", "GR_mm_a", "P_mm_a", "T_Cel", "T_0_ratio")
+df_Meteo_Indikator <- terra::values(polygon_EZG_all)[,1:2] |> cbind(num_MeteoIndikator)
+write.csv(df_Meteo_Indikator, file.path(path_Out, "tbl_MeteoIndikator.csv"), quote = FALSE, row.names = FALSE)
+
+# langjährigen Jahresmittelwerte ---------
+idx_End90 <- which(ymd_61_20 == as_date("1990-12-31"))
+num_Mean_61_90 <- apply(tva_Meteo_CAMELSSAX[1:idx_End90,,], c(2,3), mean)
+num_Mean_91_20 <- apply(tva_Meteo_CAMELSSAX[-(1:idx_End90),,], c(2,3), mean)
+
+df_Jahrmittel <- cbind(num_Mean_61_90, num_Mean_91_20, num_Mean_4)
+df_Jahrmittel[,c(1:3,5:7, 9:11)] <- df_Jahrmittel[,c(1:3,5:7, 9:11)] * 365.25
+colnames(df_Jahrmittel) <- paste0(rep(c("PET_mm_a", "GR_mm_a", "P_mm_a", "T_Cel"), 3), rep(c("_61_90", "_91_20", "_61_20"), each = 4))
+df_Meteo_Jahresmittel <- terra::values(polygon_EZG_all)[,1:2] |> cbind(df_Jahrmittel)
+write.csv(df_Meteo_Jahresmittel, file.path(path_Out, "tbl_Meteo_Jahresmittel.csv"), quote = FALSE, row.names = FALSE)
+
+
+
+
+# Test -----
+polygon_EZG_all$test <- df_Meteo_Jahresmittel$PET_mm_a_61_20
+
+ggplot() +
+  geom_spatvector(data = polygon_EZG_all, aes(fill = test)) +
+  labs(fill = "PET [mm/a]")
+
+
+
+
+

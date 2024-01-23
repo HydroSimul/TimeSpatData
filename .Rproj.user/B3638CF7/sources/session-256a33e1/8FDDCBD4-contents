@@ -1,0 +1,62 @@
+---
+title: "TimeSpatData: An R Package for Temporal-Spatial Data Processing, Analysis, and Visualization"
+author:  "Kan Lei, Hans Dürr and Martina Flörke"
+date: today
+# date-format: "DD.MM.YYYY"
+lang: de    
+# bibliography: ../references.bib
+format:
+  pdf:
+    pdf-engine: lualatex
+    # documentclass: scrartcl 
+    # toc: true
+    number-sections: true
+    colorlinks: true
+    # cite-method: natbib
+    # biblio-style: abbrvnat
+    mainfont: Open Sans Light
+    mainfontoptions: 
+      - BoldFont=Open Sans SemiBold
+      - BoldItalicFont=Open Sans Italic
+    mathfont: FiraMath.otf
+    geometry:
+      - top=20mm
+      - right=25mm
+      - left=25mm
+    include-in-header:
+      text: |
+        \newfontfamily\sectionfont{Open Sans}
+        \addtokomafont{disposition}{\sectionfont}
+header-includes:
+  - \usepackage{titling}
+  - \pretitle{
+  - \begin{center}
+  - \vspace*{-4.9cm}
+  - \hspace*{-2.6cm}
+  - \includegraphics[width=21.6cm]{images/header_RUB_HW.png}
+  - \vspace*{.2cm}
+  - \Large\bfseries\sectionfont\\}
+  - \posttitle{
+  - \end{center}}
+---
+
+ 
+# Session {-}
+
+Session HS3.1: [https://meetingorganizer.copernicus.org/EGU24/session/48167](https://meetingorganizer.copernicus.org/EGU24/session/48167)
+
+Hydroinformatics: data analytics, machine learning, hybrid modelling, optimisation
+
+
+# Abstract{-}
+
+With the rise of high-resolution climate products and a growing influx of observed hydrological data, the demand for efficient tools capable of managing extensive, multi-dimensional datasets has become crucial. Established tools such as Climate Data Operators (CDO), though valuable, are hindered by their command-line nature, limiting their adaptability to advanced spatial and statistical analysis requirements.
+
+Enter TimeSpatData, an R package designed to offer a comprehensive solution for the efficient processing, analysis, and visualization of NetCDF-based temporal-spatial multidimensional data. Tailored to handle large datasets, it integrates additional spatial and temporal information vital for in-depth analysis and modeling. Noteworthy for its prowess in spatial processing, the package provides functionalities including reprojection, cropping, and masking. Beyond fundamental operations, users can extract raster or vector-based time series to polygon-based time series, sample data to point-based time series, and interpolate missing values in both time and spatial dimensions. Analytical capabilities extend to spatial and temporal statistics, time series analysis, and their amalgamation. The inclusion of Shiny-based web tools adds a dynamic and interactive dimension to visualizing temporal, spatial, and statistical information.
+
+In conclusion, TimeSpatData emerges as a versatile, efficient, and user-friendly toolkit for researchers and analysts grappling with intricate temporal-spatial datasets. Ongoing developments will focus on expanding functionalities, supporting additional data formats, and refining user experiences, thereby contributing to the dynamic landscape of climate research and hydrological modeling.
+
+
+
+
+

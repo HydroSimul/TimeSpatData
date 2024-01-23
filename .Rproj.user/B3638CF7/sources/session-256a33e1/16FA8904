@@ -1,0 +1,26 @@
+{
+    "id": "16FA8904",
+    "path": "U:/PACKAGE/TimeSpatData/R/class_TimeVectData.R",
+    "project_path": "R/class_TimeVectData.R",
+    "type": "r_source",
+    "hash": "0",
+    "contents": "",
+    "dirty": false,
+    "created": 1704718729625.0,
+    "source_on_save": false,
+    "relative_order": 3,
+    "properties": {
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "32,8",
+        "scrollLine": "0"
+    },
+    "folds": "",
+    "lastKnownWriteTime": 1680186006,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1680186006,
+    "read_only": false,
+    "read_only_alternatives": []
+}

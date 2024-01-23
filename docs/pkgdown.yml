@@ -1,8 +1,8 @@
-pandoc: 2.14.0.3
+pandoc: 3.1.1
 pkgdown: 2.0.7
 pkgdown_sha: ~
 articles:
   create-tsd: create-tsd.html
   TimeSpatData: TimeSpatData.html
-last_built: 2023-03-31T11:13Z
+last_built: 2024-01-23T15:46Z
 

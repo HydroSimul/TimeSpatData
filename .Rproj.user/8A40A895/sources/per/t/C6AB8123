@@ -1,0 +1,28 @@
+{
+    "id": "C6AB8123",
+    "path": "E:/Kan_Lei/PACKAGE/TimeSpatData/R/read.R",
+    "project_path": "R/read.R",
+    "type": "r_source",
+    "hash": "163642394",
+    "contents": "",
+    "dirty": false,
+    "created": 1664461142097.0,
+    "source_on_save": false,
+    "relative_order": 1,
+    "properties": {
+        "tempName": "Untitled1",
+        "source_window_id": "",
+        "Source": "Source",
+        "cursorPosition": "45,52",
+        "scrollLine": "0",
+        "docOutlineVisible": "1"
+    },
+    "folds": "116|29|141|9|\n142|26|171|9|\n172|34|198|9|\n199|31|225|9|\n",
+    "lastKnownWriteTime": 1677714503,
+    "encoding": "UTF-8",
+    "collab_server": "",
+    "source_window": "",
+    "last_content_update": 1677714503496,
+    "read_only": false,
+    "read_only_alternatives": []
+}
